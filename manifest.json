@@ -1,9 +1,9 @@
 {
-  "name": "Wi-Fi & Speed Tester",
-  "short_name": "WiFiTest",
+  "name": "SHM Wi-Fi Analyzer",
+  "short_name": "SHM Wi-Fi",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#121212",
+  "background_color": "#0f111a",
   "theme_color": "#00d2d3",
   "orientation": "portrait",
   "icons": [
