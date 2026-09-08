@@ -3,58 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wi-Fi & Speed Tester</title>
+  <title>Wi-Fi & Network Analyzer</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00d2d3">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-    .container { width: 100%; max-width: 400px; text-align: center; }
-    h1 { color: #00d2d3; font-size: 24px; margin-bottom: 20px; margin-top: 10px; }
-    .card { background: #1e1e1e; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid #333; }
-    .metric { display: flex; justify-content: space-between; margin: 12px 0; font-size: 16px; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; }
-    .metric span:last-child { font-weight: bold; color: #2ed573; font-size: 18px; }
-    .btn { background: #00d2d3; color: #121212; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; margin-top: 10px; }
-    .btn:disabled { background: #555; color: #888; }
-    .status { margin-top: 15px; font-size: 14px; color: #ffa502; min-height: 20px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f111a; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 15px; }
+    .container { width: 100%; max-width: 440px; }
+    h1 { color: #00d2d3; font-size: 22px; text-align: center; margin: 15px 0; }
+    
+    .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 15px 0 8px 5px; font-weight: 600; }
+    .card { background: #1a1d29; border-radius: 12px; padding: 15px; border: 1px solid #262b3d; margin-bottom: 12px; }
+    
+    .metric { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #232738; }
+    .metric:last-child { border-bottom: none; }
+    .metric-label { font-size: 14px; color: #a4b0be; }
+    .metric-val { font-size: 16px; font-weight: bold; color: #2ed573; }
+    
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .stat-box { background: #1a1d29; border: 1px solid #262b3d; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-title { font-size: 12px; color: #747d8c; margin-bottom: 5px; }
+    .stat-number { font-size: 20px; font-weight: bold; color: #00d2d3; }
+    
+    .badges { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; }
+    .badge { flex: 1; background: #222738; border-radius: 8px; padding: 8px; text-align: center; font-size: 11px; }
+    .badge-icon { font-size: 16px; margin-bottom: 4px; display: block; }
+    .badge-status { font-weight: bold; }
+    .good { color: #2ed573; }
+    .fair { color: #ffa502; }
+    .poor { color: #ff4757; }
+
+    .btn { background: #00d2d3; color: #000; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; margin: 15px 0; transition: 0.2s; }
+    .btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+    .status { text-align: center; font-size: 13px; color: #ffa502; min-height: 20px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>⚡ Wi-Fi & Speed Tester</h1>
+  <h1>⚡ Wi-Fi & Network Analyzer</h1>
 
-  <div class="card">
-    <div class="metric">
-      <span>কানেকশন টাইপ:</span>
-      <span id="conn-type">চেক করা হচ্ছে...</span>
+  <!-- ডাউনলোড এবং আপলোড বড় বক্স -->
+  <div class="grid">
+    <div class="stat-box">
+      <div class="stat-title">ডাউনলোড স্পিড</div>
+      <div class="stat-number" id="speed-down">-- <span style="font-size:12px;">Mbps</span></div>
     </div>
-    <div class="metric">
-      <span>Ping (Latency):</span>
-      <span id="ping-val">-- ms</span>
-    </div>
-    <div class="metric">
-      <span>Jitter (স্থিরতা):</span>
-      <span id="jitter-val">-- ms</span>
-    </div>
-    <div class="metric">
-      <span>Download Speed:</span>
-      <span id="speed-val">-- Mbps</span>
+    <div class="stat-box">
+      <div class="stat-title">আপলোড স্পিড</div>
+      <div class="stat-number" id="speed-up">-- <span style="font-size:12px;">Mbps</span></div>
     </div>
   </div>
 
-  <button class="btn" id="startBtn" onclick="runSpeedTest()">টেস্ট শুরু করুন</button>
+  <!-- লেটেন্সি ও স্ট্যাবিলিটি -->
+  <div class="section-title">কানেকশন কোয়ালিটি</div>
+  <div class="card">
+    <div class="metric">
+      <span class="metric-label">Ping (Latency)</span>
+      <span class="metric-val" id="ping-val">-- ms</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Jitter (স্থিরতা)</span>
+      <span class="metric-val" id="jitter-val">-- ms</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">নেটওয়ার্ক মোড</span>
+      <span class="metric-val" id="conn-type">চেক হচ্ছে...</span>
+    </div>
+  </div>
+
+  <!-- নেটওয়ার্ক ও প্রোভাইডার তথ্য -->
+  <div class="section-title">আইএসপি ও নেটওয়ার্ক তথ্য</div>
+  <div class="card">
+    <div class="metric">
+      <span class="metric-label">ইন্টারনেট অপারেটর (ISP)</span>
+      <span class="metric-val" id="isp-val" style="color:#00d2d3; font-size:14px;">--</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">পাবলিক IP</span>
+      <span class="metric-val" id="ip-val" style="color:#ced6e0; font-size:14px;">--</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">লোকেশন</span>
+      <span class="metric-val" id="loc-val" style="color:#ced6e0; font-size:14px;">--</span>
+    </div>
+  </div>
+
+  <!-- পারফরম্যান্স রেটিং -->
+  <div class="section-title">ব্যবহার উপযোগিতা রেটিং</div>
+  <div class="card" style="padding: 10px;">
+    <div class="badges">
+      <div class="badge">
+        <span class="badge-icon">🎮</span>
+        <span>গেমিং</span>
+        <div id="game-status" class="badge-status">--</div>
+      </div>
+      <div class="badge">
+        <span class="badge-icon">📺</span>
+        <span>4K ভিডিও</span>
+        <div id="stream-status" class="badge-status">--</div>
+      </div>
+      <div class="badge">
+        <span class="badge-icon">📞</span>
+        <span>ভিডিও কল</span>
+        <div id="call-status" class="badge-status">--</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="startBtn" onclick="runCompleteTest()">সম্পূর্ণ টেস্ট শুরু করুন</button>
   <div class="status" id="status-text"></div>
 </div>
 
 <script>
-  // Service Worker রেজিস্টার
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
   }
 
-  // কানেকশন টাইপ ডিটেকশন
-  function updateConnectionInfo() {
+  // নেটওয়ার্ক মোড ডিটেক্ট
+  function detectMode() {
     if ('connection' in navigator) {
       const conn = navigator.connection;
       document.getElementById('conn-type').innerText = conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Wi-Fi/LAN';
@@ -62,68 +129,124 @@
       document.getElementById('conn-type').innerText = 'Online';
     }
   }
-  updateConnectionInfo();
+  detectMode();
 
-  // পিং এবং জিটার টেস্ট
+  // ISP ও IP তথ্য লোড
+  async function fetchNetworkDetails() {
+    try {
+      const res = await fetch('https://ipwho.is/');
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('ip-val').innerText = data.ip || '--';
+        document.getElementById('isp-val').innerText = data.connection?.isp || data.isp || 'Unknown';
+        document.getElementById('loc-val').innerText = `${data.city || ''}, ${data.country || ''}`;
+      }
+    } catch (e) {
+      document.getElementById('isp-val').innerText = 'লোকাল / ইন্টারনেট';
+    }
+  }
+  fetchNetworkDetails();
+
+  // পিং এবং জিটার
   async function testPingAndJitter() {
     const pings = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const start = performance.now();
       try {
         await fetch('https://www.cloudflare.com/cdn-cgi/trace?' + Date.now(), { cache: 'no-store', mode: 'no-cors' });
         pings.push(performance.now() - start);
       } catch (e) {}
     }
-    if (pings.length === 0) return { ping: null, jitter: null };
-
+    if (pings.length === 0) return { ping: 0, jitter: 0 };
     const avgPing = Math.round(pings.reduce((a, b) => a + b, 0) / pings.length);
     let jitter = 0;
     for (let i = 1; i < pings.length; i++) {
       jitter += Math.abs(pings[i] - pings[i - 1]);
     }
-    jitter = Math.round(jitter / (pings.length - 1));
-
-    return { ping: avgPing, jitter: jitter };
+    return { ping: avgPing, jitter: Math.round(jitter / (pings.length - 1)) };
   }
 
-  // ডাউনলোড স্পিড টেস্ট
-  async function testDownloadSpeed() {
-    const testFile = 'https://speed.cloudflare.com/__down?bytes=5000000'; // ৫ মেগাবাইট ফাইল
+  // ডাউনলোড স্পিড
+  async function testDownload() {
     const start = performance.now();
     try {
-      const response = await fetch(testFile, { cache: 'no-store' });
-      const reader = response.body.getReader();
-      let receivedBytes = 0;
-
+      const res = await fetch('https://speed.cloudflare.com/__down?bytes=5000000', { cache: 'no-store' });
+      const reader = res.body.getReader();
+      let bytes = 0;
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        receivedBytes += value.length;
+        bytes += value.length;
       }
-
-      const durationSec = (performance.now() - start) / 1000;
-      const speedMbps = ((receivedBytes * 8) / durationSec / (1024 * 1024)).toFixed(2);
-      return speedMbps;
+      const sec = (performance.now() - start) / 1000;
+      return ((bytes * 8) / sec / (1024 * 1024)).toFixed(2);
     } catch (e) {
       return null;
     }
   }
 
-  async function runSpeedTest() {
+  // আপলোড স্পিড (আনুমানিক ডামি পে-লোড টেস্ট)
+  async function testUpload() {
+    const payload = new Uint8Array(1024 * 1024 * 2); // ২ মেগাবাইট ডাটা
+    const start = performance.now();
+    try {
+      await fetch('https://speed.cloudflare.com/__up', {
+        method: 'POST',
+        body: payload,
+        cache: 'no-store',
+        mode: 'no-cors'
+      });
+      const sec = (performance.now() - start) / 1000;
+      return ((payload.length * 8) / sec / (1024 * 1024)).toFixed(2);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // রেটিং আপডেট ফাংশন
+  function updateRatings(ping, speed) {
+    const game = document.getElementById('game-status');
+    const stream = document.getElementById('stream-status');
+    const call = document.getElementById('call-status');
+
+    // গেমিং
+    if (ping <= 20) { game.innerText = "দারুণ"; game.className = "badge-status good"; }
+    else if (ping <= 60) { game.innerText = "ভালো"; game.className = "badge-status fair"; }
+    else { game.innerText = "দুর্বল"; game.className = "badge-status poor"; }
+
+    // 4K ভিডিও
+    if (speed >= 25) { stream.innerText = "মসৃণ"; stream.className = "badge-status good"; }
+    else if (speed >= 10) { stream.innerText = "HD চলবে"; stream.className = "badge-status fair"; }
+    else { stream.innerText = "বাফারিং"; stream.className = "badge-status poor"; }
+
+    // ভিডিও কল
+    if (ping <= 50 && speed >= 5) { call.innerText = "পরিষ্কার"; call.className = "badge-status good"; }
+    else { call.innerText = "মাঝারি"; call.className = "badge-status fair"; }
+  }
+
+  async function runCompleteTest() {
     const btn = document.getElementById('startBtn');
     const status = document.getElementById('status-text');
     btn.disabled = true;
 
-    status.innerText = "পিং এবং জিটার পরিমাপ করা হচ্ছে...";
+    status.innerText = "১/৩: পিং ও জিটার চেক হচ্ছে...";
     const { ping, jitter } = await testPingAndJitter();
-    document.getElementById('ping-val').innerText = ping ? `${ping} ms` : 'Error';
-    document.getElementById('jitter-val').innerText = jitter ? `${jitter} ms` : 'Error';
+    document.getElementById('ping-val').innerText = ping + ' ms';
+    document.getElementById('jitter-val').innerText = jitter + ' ms';
 
-    status.innerText = "ডাউনলোড স্পিড টেস্ট হচ্ছে...";
-    const speed = await testDownloadSpeed();
-    document.getElementById('speed-val').innerText = speed ? `${speed} Mbps` : 'Error';
+    status.innerText = "২/৩: ডাউনলোড স্পিড টেস্ট হচ্ছে...";
+    const downSpeed = await testDownload();
+    document.getElementById('speed-down').innerHTML = (downSpeed || '--') + ' <span style="font-size:12px;">Mbps</span>';
 
-    status.innerText = "টেস্ট সম্পন্ন হয়েছে!";
+    status.innerText = "৩/৩: আপলোড স্পিড টেস্ট হচ্ছে...";
+    const upSpeed = await testUpload();
+    document.getElementById('speed-up').innerHTML = (upSpeed || '--') + ' <span style="font-size:12px;">Mbps</span>';
+
+    if (ping && downSpeed) {
+      updateRatings(ping, parseFloat(downSpeed));
+    }
+
+    status.innerText = "সবগুলো টেস্ট সফলভাবে সম্পন্ন হয়েছে!";
     btn.disabled = false;
   }
 </script>
