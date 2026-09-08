@@ -1,0 +1,16 @@
+{
+  "name": "Wi-Fi & Speed Tester",
+  "short_name": "WiFiTest",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#00d2d3",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/93/93158.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
