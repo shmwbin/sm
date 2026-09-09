@@ -43,7 +43,7 @@
 <div class="container">
   <h1>⚡ SHM Wi-Fi & Network Analyzer</h1>
 
-  <!-- ডাউনলোড এবং আপলোড বড় বক্স -->
+  <!-- ডাউনলোড এবং আপলোড বক্স -->
   <div class="grid">
     <div class="stat-box">
       <div class="stat-title">ডাউনলোড স্পিড</div>
@@ -56,7 +56,7 @@
   </div>
 
   <!-- লেটেন্সি ও স্ট্যাবিলিটি -->
-  <div class="section-title">কানেকশন কোয়ালিটি</div>
+  <div class="section-title">কানেকশন কোয়ালিটি</div>
   <div class="card">
     <div class="metric">
       <span class="metric-label">Ping (Latency)</span>
@@ -67,13 +67,13 @@
       <span class="metric-val" id="jitter-val">-- ms</span>
     </div>
     <div class="metric">
-      <span class="metric-label">নেটওয়ার্ক মোড</span>
+      <span class="metric-label">নেটওয়ার্ক মোড</span>
       <span class="metric-val" id="conn-type">চেক হচ্ছে...</span>
     </div>
   </div>
 
-  <!-- নেটওয়ার্ক ও প্রোভাইডার তথ্য -->
-  <div class="section-title">আইএসপি ও নেটওয়ার্ক তথ্য</div>
+  <!-- আইএসপি ও নেটওয়ার্ক তথ্য -->
+  <div class="section-title">আইএসপি ও নেটওয়ার্ক তথ্য</div>
   <div class="card">
     <div class="metric">
       <span class="metric-label">ইন্টারনেট অপারেটর (ISP)</span>
@@ -120,13 +120,26 @@
     navigator.serviceWorker.register('sw.js');
   }
 
-  // নেটওয়ার্ক মোড ডিটেক্ট
+  // নেটওয়ার্ক মোড ডিটেক্ট (Wi-Fi বা 4G/Cellular)
   function detectMode() {
     if ('connection' in navigator) {
       const conn = navigator.connection;
-      document.getElementById('conn-type').innerText = conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Wi-Fi/LAN';
+      let netType = conn.type ? conn.type.toUpperCase() : '';
+      let effType = conn.effectiveType ? conn.effectiveType.toUpperCase() : '';
+      
+      let displayMode = 'Wi-Fi / ব্রডব্যান্ড';
+      
+      if (netType === 'wifi') {
+        displayMode = 'Wi-Fi নেটওয়ার্ক';
+      } else if (netType === 'cellular' || effType === '4g' || effType === '3g') {
+        displayMode = effType === '4g' ? '4G / মোবাইল ডাটা' : (effType ? effType + ' নেটওয়ার্ক' : 'সেলুলার ডাটা');
+      } else if (effType) {
+        displayMode = effType;
+      }
+      
+      document.getElementById('conn-type').innerText = displayMode;
     } else {
-      document.getElementById('conn-type').innerText = 'Online';
+      document.getElementById('conn-type').innerText = 'অনলাইন (Wi-Fi/LAN)';
     }
   }
   detectMode();
@@ -142,12 +155,12 @@
         document.getElementById('loc-val').innerText = `${data.city || ''}, ${data.country || ''}`;
       }
     } catch (e) {
-      document.getElementById('isp-val').innerText = 'লোকাল / ইন্টারনেট';
+      document.getElementById('isp-val').innerText = 'লোকাল নেটওয়ার্ক';
     }
   }
   fetchNetworkDetails();
 
-  // পিং এবং জিটার
+  // পিং এবং জিটার টেস্ট
   async function testPingAndJitter() {
     const pings = [];
     for (let i = 0; i < 5; i++) {
@@ -166,7 +179,7 @@
     return { ping: avgPing, jitter: Math.round(jitter / (pings.length - 1)) };
   }
 
-  // ডাউনলোড স্পিড
+  // ডাউনলোড স্পিড টেস্ট
   async function testDownload() {
     const start = performance.now();
     try {
@@ -185,7 +198,7 @@
     }
   }
 
-  // আপলোড স্পিড (আনুমানিক ডামি পে-লোড টেস্ট)
+  // আপলোড স্পিড টেস্ট
   async function testUpload() {
     const payload = new Uint8Array(1024 * 1024 * 2); // ২ মেগাবাইট ডাটা
     const start = performance.now();
@@ -224,6 +237,7 @@
     else { call.innerText = "মাঝারি"; call.className = "badge-status fair"; }
   }
 
+  // সম্পূর্ণ টেস্ট রানার
   async function runCompleteTest() {
     const btn = document.getElementById('startBtn');
     const status = document.getElementById('status-text');
