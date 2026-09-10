@@ -30,18 +30,17 @@
     .badge-icon { font-size: 16px; margin-bottom: 4px; display: block; }
     .badge-status { font-weight: bold; margin-top: 4px; }
     
-    /* কালার কোডিং এবং ব্লিংকিং অ্যানিমেশন */
     .good { color: #2ed573 !important; }
     .fair { color: #ffa502 !important; }
     .poor { color: #ff4757 !important; }
 
-    @keyframes blink-green { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-    @keyframes blink-yellow { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-    @keyframes blink-red { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    @keyframes blink-green { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+    @keyframes blink-yellow { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+    @keyframes blink-red { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
 
-    .blink-good { animation: blink-green 1.2s infinite ease-in-out; color: #2ed573; }
-    .blink-fair { animation: blink-yellow 1.2s infinite ease-in-out; color: #ffa502; }
-    .blink-poor { animation: blink-red 0.8s infinite ease-in-out; color: #ff4757; }
+    .blink-good { animation: blink-green 1s infinite ease-in-out; color: #2ed573; }
+    .blink-fair { animation: blink-yellow 1s infinite ease-in-out; color: #ffa502; }
+    .blink-poor { animation: blink-red 0.6s infinite ease-in-out; color: #ff4757; }
 
     .btn { background: linear-gradient(135deg, #00d2d3, #2ed573); color: #000; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; margin: 15px 0; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,210,211,0.3); }
     .btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
@@ -53,7 +52,6 @@
 <div class="container">
   <h1>⚡ SHM Network Analyzer Pro X</h1>
 
-  <!-- ডাউনলোড এবং আপলোড বক্স -->
   <div class="grid">
     <div class="stat-box">
       <div class="stat-title">ডাউনলোড স্পিড</div>
@@ -65,7 +63,6 @@
     </div>
   </div>
 
-  <!-- লেটেন্সি ও স্ট্যাবিলিটি -->
   <div class="section-title">কানেকশন কোয়ালিটি</div>
   <div class="card">
     <div class="metric">
@@ -82,7 +79,6 @@
     </div>
   </div>
 
-  <!-- আইএসপি ও নেটওয়ার্ক তথ্য -->
   <div class="section-title">আইএসপি ও নেটওয়ার্ক তথ্য</div>
   <div class="card">
     <div class="metric">
@@ -99,7 +95,6 @@
     </div>
   </div>
 
-  <!-- পারফরম্যান্স ও ইউজেজ রেটিং -->
   <div class="section-title">পারফরম্যান্স ও ইউজেজ রেটিং</div>
   <div class="card" style="padding: 10px;">
     <div class="badges">
@@ -115,7 +110,7 @@
       </div>
       <div class="badge">
         <span class="badge-icon">📶</span>
-        <span>নেটওয়ার্ক স্ট্যাবিলিটি</span>
+        <span>স্ট্যাবিলিটি (৩০ সে:)</span>
         <div id="stability-status" class="badge-status">--</div>
       </div>
     </div>
@@ -130,7 +125,6 @@
     navigator.serviceWorker.register('sw.js');
   }
 
-  // নেটওয়ার্ক মোড ডিটেক্ট
   function detectMode() {
     if ('connection' in navigator) {
       const conn = navigator.connection;
@@ -152,7 +146,6 @@
   }
   detectMode();
 
-  // ISP ও IP ফেচ করা
   async function fetchNetworkDetails() {
     try {
       const res = await fetch('https://ipwho.is/');
@@ -168,26 +161,40 @@
   }
   fetchNetworkDetails();
 
-  // পিং এবং জিটার ক্যালকুলেশন
-  async function testPingAndJitter() {
+  // ৩০ সেকেন্ড ধরে স্ট্যাবিলিটি এভারেজ চেক করার ফাংশন
+  async function testStability30Sec(statusElement) {
     const pings = [];
-    for (let i = 0; i < 4; i++) {
+    const totalDuration = 30; // ৩০ সেকেন্ড
+    const intervalTime = 3000; // প্রতি ৩ সেকেন্ডে ১ বার পিং (মোট ১০ বার)
+    const iterations = totalDuration / (intervalTime / 1000);
+
+    for (let i = 1; i <= iterations; i++) {
+      const remainingSec = totalDuration - (i - 1) * (intervalTime / 1000);
+      statusElement.innerText = `স্ট্যাবিলিটি যাচাই হচ্ছে (${remainingSec} সে: বাকি)...`;
+      
       const start = performance.now();
       try {
         await fetch('https://www.cloudflare.com/cdn-cgi/trace?' + Date.now(), { cache: 'no-store', mode: 'no-cors' });
         pings.push(performance.now() - start);
       } catch (e) {}
+
+      if (i < iterations) {
+        await new Promise(resolve => setTimeout(resolve, intervalTime));
+      }
     }
-    if (pings.length === 0) return { ping: 0, jitter: 0 };
+
+    if (pings.length === 0) return { avgPing: 0, jitter: 0 };
+
     const avgPing = Math.round(pings.reduce((a, b) => a + b, 0) / pings.length);
     let jitter = 0;
     for (let i = 1; i < pings.length; i++) {
       jitter += Math.abs(pings[i] - pings[i - 1]);
     }
-    return { ping: avgPing, jitter: Math.round(jitter / (pings.length - 1)) };
+    const avgJitter = Math.round(jitter / (pings.length - 1));
+
+    return { avgPing, jitter: avgJitter };
   }
 
-  // ডাউনলোড স্পিড টেস্ট
   async function testDownload() {
     const start = performance.now();
     try {
@@ -206,7 +213,6 @@
     }
   }
 
-  // আপলোড স্পিড টেস্ট
   async function testUpload() {
     const payload = new Uint8Array(1024 * 1024 * 2);
     const start = performance.now();
@@ -224,13 +230,12 @@
     }
   }
 
-  // পারফরম্যান্স রেটিং এবং ডাইনামিক স্ট্যাটাস আপডেট
-  function updateRatings(ping, jitter, speed) {
+  function updateRatings(ping, speed) {
     const browse = document.getElementById('browse-status');
     const stream = document.getElementById('stream-status');
     const stability = document.getElementById('stability-status');
 
-    // ১. ব্রাউজিং স্পিড রেটিং (Good, Medium, Bad)
+    // ১. ব্রাউজিং স্পিড রেটিং
     if (speed >= 15) {
       browse.innerText = "ফাস্ট (Good)"; 
       browse.className = "badge-status good";
@@ -242,7 +247,7 @@
       browse.className = "badge-status poor";
     }
 
-    // ২. ভিডিও রেজুলেশন (SD, HD, 4K, 8K Available check)
+    // ২. ভিডিও রেজুলেশন (SD, HD, 4K, 8K)
     if (speed >= 80) {
       stream.innerText = "8K আল্ট্রা"; 
       stream.className = "badge-status good";
@@ -260,28 +265,28 @@
       stream.className = "badge-status poor";
     }
 
-    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি ব্লিংকিং লাইট (Green, Yellow, Red Blink)
-    if (ping <= 40 && jitter <= 10) {
+    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (৩০ সেকেন্ড এভারেজ অনুযায়ী ব্লিংকিং)
+    // শর্ত: >30 হলে গুড (সবুজ), >50 হলে মিডিয়াম (হলুদ), <50 হলে উইক/ব্যাড (লাল)
+    if (ping > 30) {
       stability.innerHTML = "🟢 গুড (Good)";
       stability.className = "badge-status blink-good";
-    } else if (ping <= 100 && jitter <= 30) {
+    } else if (ping > 50) {
       stability.innerHTML = "🟡 মিডিয়াম (Medium)";
       stability.className = "badge-status blink-fair";
     } else {
-      stability.innerHTML = "🔴 ব্যাড (Bad)";
+      stability.innerHTML = "🔴 উইক (Weak)";
       stability.className = "badge-status blink-poor";
     }
   }
 
-  // সম্পূর্ণ টেস্ট রানার
   async function runCompleteTest() {
     const btn = document.getElementById('startBtn');
     const status = document.getElementById('status-text');
     btn.disabled = true;
 
-    status.innerText = "পিং ও জিটার পরিমাপ করা হচ্ছে...";
-    const { ping, jitter } = await testPingAndJitter();
-    document.getElementById('ping-val').innerText = ping + ' ms';
+    // ৩০ সেকেন্ডের স্ট্যাবিলিটি টেস্ট রান করা হচ্ছে
+    const { avgPing, jitter } = await testStability30Sec(status);
+    document.getElementById('ping-val').innerText = avgPing + ' ms';
     document.getElementById('jitter-val').innerText = jitter + ' ms';
 
     status.innerText = "ডাউনলোড স্পিড টেস্ট চলছে...";
@@ -292,8 +297,8 @@
     const upSpeed = await testUpload();
     document.getElementById('speed-up').innerHTML = (upSpeed || '--') + ' <span style="font-size:12px;">Mbps</span>';
 
-    if (ping !== undefined && downSpeed) {
-      updateRatings(ping, jitter, parseFloat(downSpeed));
+    if (!isNaN(avgPing) && downSpeed) {
+      updateRatings(avgPing, parseFloat(downSpeed));
     }
 
     status.innerText = "টেস্ট সফলভাবে সম্পন্ন হয়েছে!";
