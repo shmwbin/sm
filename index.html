@@ -5,77 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SHM Network Analyzer Pro X</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00d2d3">
+  <meta name="theme-color" content="#0f172a">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f111a; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 15px; }
+    body { font-family: 'Outfit', sans-serif; background: #07090e; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
     .container { width: 100%; max-width: 440px; }
-    h1 { color: #00d2d3; font-size: 22px; text-align: center; margin: 15px 0; }
     
-    .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 15px 0 8px 5px; font-weight: 600; }
-    .card { background: #1a1d29; border-radius: 12px; padding: 15px; border: 1px solid #262b3d; margin-bottom: 12px; }
+    h1 { color: #38bdf8; font-size: 24px; text-align: center; margin: 10px 0 20px 0; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(56,189,248,0.3); }
     
-    .metric { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #232738; }
+    .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #94a3b8; margin: 18px 0 8px 6px; font-weight: 600; }
+    
+    .card { background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; margin-bottom: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
+    
+    .metric { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e293b; }
     .metric:last-child { border-bottom: none; }
-    .metric-label { font-size: 14px; color: #a4b0be; }
-    .metric-val { font-size: 16px; font-weight: bold; color: #2ed573; }
+    .metric-label { font-size: 14px; color: #94a3b8; font-weight: 500; }
+    .metric-val { font-size: 16px; font-weight: 600; color: #34d399; }
     
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .stat-box { background: #1a1d29; border: 1px solid #262b3d; border-radius: 12px; padding: 14px; text-align: center; }
-    .stat-title { font-size: 12px; color: #747d8c; margin-bottom: 5px; }
-    .stat-number { font-size: 20px; font-weight: bold; color: #00d2d3; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .stat-box { background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1e293b; border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
+    .stat-title { font-size: 12px; color: #94a3b8; margin-bottom: 8px; font-weight: 500; }
+    .stat-number { font-size: 22px; font-weight: 700; color: #38bdf8; }
     
     .badges { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; }
-    .badge { flex: 1; background: #222738; border-radius: 8px; padding: 8px; text-align: center; font-size: 11px; }
-    .badge-icon { font-size: 16px; margin-bottom: 4px; display: block; }
-    .badge-status { font-weight: bold; margin-top: 4px; }
+    .badge { flex: 1; background: #1e293b; border-radius: 12px; padding: 12px 8px; text-align: center; font-size: 11px; border: 1px solid #334155; }
+    .badge-icon { font-size: 18px; margin-bottom: 6px; display: block; }
+    .badge-status { font-weight: 700; margin-top: 6px; font-size: 12px; }
     
-    .good { color: #2ed573 !important; }
-    .fair { color: #ffa502 !important; }
-    .poor { color: #ff4757 !important; }
+    /* কালার থিম ও ডিফারেন্ট ফন্ট কালার */
+    .c-green { color: #34d399 !important; }
+    .c-yellow { color: #fbbf24 !important; }
+    .c-red { color: #f87171 !important; }
+    .c-cyan { color: #38bdf8 !important; }
+    .c-purple { color: #c084fc !important; }
 
-    @keyframes blink-green { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
-    @keyframes blink-yellow { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
-    @keyframes blink-red { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+    /* ব্লিংকিং অ্যানিমেশন */
+    @keyframes blink-green { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    @keyframes blink-yellow { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    @keyframes blink-red { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
 
-    .blink-good { animation: blink-green 1s infinite ease-in-out; color: #2ed573; }
-    .blink-fair { animation: blink-yellow 1s infinite ease-in-out; color: #ffa502; }
-    .blink-poor { animation: blink-red 0.6s infinite ease-in-out; color: #ff4757; }
+    .blink-good { animation: blink-green 1s infinite ease-in-out; color: #34d399; }
+    .blink-fair { animation: blink-yellow 1s infinite ease-in-out; color: #fbbf24; }
+    .blink-poor { animation: blink-red 0.6s infinite ease-in-out; color: #f87171; }
 
-    .btn { background: linear-gradient(135deg, #00d2d3, #2ed573); color: #000; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; margin: 15px 0; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,210,211,0.3); }
-    .btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
-    .status { text-align: center; font-size: 13px; color: #ffa502; min-height: 20px; }
+    .btn { background: linear-gradient(135deg, #38bdf8 0%, #34d399 100%); color: #0f172a; border: none; padding: 16px; font-size: 16px; font-weight: 700; border-radius: 30px; cursor: pointer; width: 100%; margin: 20px 0 10px 0; transition: 0.3s; box-shadow: 0 10px 20px -5px rgba(56,189,248,0.4); font-family: 'Outfit', sans-serif; }
+    .btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; box-shadow: none; }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(56,189,248,0.6); }
+    
+    .status { text-align: center; font-size: 13px; color: #fbbf24; min-height: 24px; font-weight: 500; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>⚡ SHM Network Analyzer Pro X</h1>
+  <h1>⚡ SHM Network Pro</h1>
 
   <div class="grid">
     <div class="stat-box">
       <div class="stat-title">ডাউনলোড স্পিড</div>
-      <div class="stat-number" id="speed-down">-- <span style="font-size:12px;">Mbps</span></div>
+      <div class="stat-number c-cyan" id="speed-down">-- <span style="font-size:12px;">Mbps</span></div>
     </div>
     <div class="stat-box">
       <div class="stat-title">আপলোড স্পিড</div>
-      <div class="stat-number" id="speed-up">-- <span style="font-size:12px;">Mbps</span></div>
+      <div class="stat-number c-purple" id="speed-up">-- <span style="font-size:12px;">Mbps</span></div>
     </div>
   </div>
 
   <div class="section-title">কানেকশন কোয়ালিটি</div>
   <div class="card">
     <div class="metric">
-      <span class="metric-label">Ping (Latency)</span>
-      <span class="metric-val" id="ping-val">-- ms</span>
+      <span class="metric-label">Avg Ping (লেটেন্সি)</span>
+      <span class="metric-val c-green" id="ping-val">-- ms</span>
     </div>
     <div class="metric">
       <span class="metric-label">Jitter (স্থিরতা)</span>
-      <span class="metric-val" id="jitter-val">-- ms</span>
+      <span class="metric-val c-yellow" id="jitter-val">-- ms</span>
     </div>
     <div class="metric">
       <span class="metric-label">নেটওয়ার্ক মোড</span>
-      <span class="metric-val" id="conn-type">চেক হচ্ছে...</span>
+      <span class="metric-val c-cyan" id="conn-type">চেক হচ্ছে...</span>
     </div>
   </div>
 
@@ -83,34 +92,34 @@
   <div class="card">
     <div class="metric">
       <span class="metric-label">ইন্টারনেট অপারেটর (ISP)</span>
-      <span class="metric-val" id="isp-val" style="color:#00d2d3; font-size:14px;">--</span>
+      <span class="metric-val c-cyan" id="isp-val">--</span>
     </div>
     <div class="metric">
       <span class="metric-label">পাবলিক IP</span>
-      <span class="metric-val" id="ip-val" style="color:#ced6e0; font-size:14px;">--</span>
+      <span class="metric-val" id="ping-val-ip" style="color:#cbd5e1;">--</span>
     </div>
     <div class="metric">
       <span class="metric-label">লোকেশন</span>
-      <span class="metric-val" id="loc-val" style="color:#ced6e0; font-size:14px;">--</span>
+      <span class="metric-val" id="loc-val" style="color:#cbd5e1;">--</span>
     </div>
   </div>
 
   <div class="section-title">পারফরম্যান্স ও ইউজেজ রেটিং</div>
-  <div class="card" style="padding: 10px;">
+  <div class="card" style="padding: 12px;">
     <div class="badges">
       <div class="badge">
         <span class="badge-icon">🌐</span>
-        <span>ব্রাউজিং স্পিড</span>
-        <div id="browse-status" class="badge-status">--</div>
+        <span style="color:#94a3b8;">ব্রাউজিং</span>
+        <div id="browse-status" class="badge-status c-green">--</div>
       </div>
       <div class="badge">
         <span class="badge-icon">📺</span>
-        <span>ভিডিও রেজুলেশন</span>
-        <div id="stream-status" class="badge-status">--</div>
+        <span style="color:#94a3b8;">ভিডিও রেজুলেশন</span>
+        <div id="stream-status" class="badge-status c-cyan">--</div>
       </div>
       <div class="badge">
         <span class="badge-icon">📶</span>
-        <span>স্ট্যাবিলিটি (৩০ সে:)</span>
+        <span style="color:#94a3b8;">স্ট্যাবিলিটি (৩০সে)</span>
         <div id="stability-status" class="badge-status">--</div>
       </div>
     </div>
@@ -151,7 +160,7 @@
       const res = await fetch('https://ipwho.is/');
       const data = await res.json();
       if (data.success) {
-        document.getElementById('ip-val').innerText = data.ip || '--';
+        document.getElementById('ping-val-ip').innerText = data.ip || '--';
         document.getElementById('isp-val').innerText = data.connection?.isp || data.isp || 'Unknown';
         document.getElementById('loc-val').innerText = `${data.city || ''}, ${data.country || ''}`;
       }
@@ -161,16 +170,16 @@
   }
   fetchNetworkDetails();
 
-  // ৩০ সেকেন্ড ধরে স্ট্যাবিলিটি এভারেজ চেক করার ফাংশন
+  // ৩০ সেকেন্ড একটানা স্ট্যাবিলিটি ও পিং-জিটার এভারেজ ক্যালকুলেটর
   async function testStability30Sec(statusElement) {
     const pings = [];
     const totalDuration = 30; // ৩০ সেকেন্ড
-    const intervalTime = 3000; // প্রতি ৩ সেকেন্ডে ১ বার পিং (মোট ১০ বার)
+    const intervalTime = 3000; // প্রতি ৩ সেকেন্ডে ১ বার রিকোয়েস্ট (মোট ১০ বার)
     const iterations = totalDuration / (intervalTime / 1000);
 
     for (let i = 1; i <= iterations; i++) {
       const remainingSec = totalDuration - (i - 1) * (intervalTime / 1000);
-      statusElement.innerText = `স্ট্যাবিলিটি যাচাই হচ্ছে (${remainingSec} সে: বাকি)...`;
+      statusElement.innerText = `৩০ সেকেন্ড স্ট্যাবিলিটি টেস্ট চলছে (${remainingSec} সে: বাকি)...`;
       
       const start = performance.now();
       try {
@@ -186,11 +195,11 @@
     if (pings.length === 0) return { avgPing: 0, jitter: 0 };
 
     const avgPing = Math.round(pings.reduce((a, b) => a + b, 0) / pings.length);
-    let jitter = 0;
+    let jitterSum = 0;
     for (let i = 1; i < pings.length; i++) {
-      jitter += Math.abs(pings[i] - pings[i - 1]);
+      jitterSum += Math.abs(pings[i] - pings[i - 1]);
     }
-    const avgJitter = Math.round(jitter / (pings.length - 1));
+    const avgJitter = Math.round(jitterSum / (pings.length - 1));
 
     return { avgPing, jitter: avgJitter };
   }
@@ -230,7 +239,7 @@
     }
   }
 
-  function updateRatings(ping, speed) {
+  function updateRatings(avgPing, speed) {
     const browse = document.getElementById('browse-status');
     const stream = document.getElementById('stream-status');
     const stability = document.getElementById('stability-status');
@@ -238,43 +247,42 @@
     // ১. ব্রাউজিং স্পিড রেটিং
     if (speed >= 15) {
       browse.innerText = "ফাস্ট (Good)"; 
-      browse.className = "badge-status good";
+      browse.className = "badge-status c-green";
     } else if (speed >= 5) {
       browse.innerText = "মাঝারি (Medium)"; 
-      browse.className = "badge-status fair";
+      browse.className = "badge-status c-yellow";
     } else {
       browse.innerText = "ধীর (Bad)"; 
-      browse.className = "badge-status poor";
+      browse.className = "badge-status c-red";
     }
 
-    // ২. ভিডিও রেজুলেশন (SD, HD, 4K, 8K)
+    // ২. ভিডিও রেজুলেশন (SD, HD, 4K, 8K Available)
     if (speed >= 80) {
       stream.innerText = "8K আল্ট্রা"; 
-      stream.className = "badge-status good";
+      stream.className = "badge-status c-purple";
     } else if (speed >= 25) {
       stream.innerText = "4K সাপোর্টেড"; 
-      stream.className = "badge-status good";
+      stream.className = "badge-status c-green";
     } else if (speed >= 10) {
       stream.innerText = "HD কোয়ালিটি"; 
-      stream.className = "badge-status fair";
+      stream.className = "badge-status c-cyan";
     } else if (speed >= 3) {
       stream.innerText = "SD কোয়ালিটি"; 
-      stream.className = "badge-status fair";
+      stream.className = "badge-status c-yellow";
     } else {
       stream.innerText = "বাফারিং (Low)"; 
-      stream.className = "badge-status poor";
+      stream.className = "badge-status c-red";
     }
 
-    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (৩০ সেকেন্ড এভারেজ অনুযায়ী ব্লিংকিং)
-    // শর্ত: >30 হলে গুড (সবুজ), >50 হলে মিডিয়াম (হলুদ), <50 হলে উইক/ব্যাড (লাল)
-    if (ping > 30) {
+    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (আপনার দেওয়া শর্ত অনুযায়ী: <30 গুড, 30-50 মিডিয়াম, >50 উইক/ব্যাড)
+    if (avgPing < 30) {
       stability.innerHTML = "🟢 গুড (Good)";
       stability.className = "badge-status blink-good";
-    } else if (ping > 50) {
-      stability.innerHTML = "🟡 মিডিয়াম (Medium)";
+    } else if (avgPing >= 30 && avgPing <= 50) {
+      stability.innerHTML = "🟡 মিডিয়াম";
       stability.className = "badge-status blink-fair";
     } else {
-      stability.innerHTML = "🔴 উইক (Weak)";
+      stability.innerHTML = "🔴 উইক (Bad)";
       stability.className = "badge-status blink-poor";
     }
   }
@@ -284,7 +292,7 @@
     const status = document.getElementById('status-text');
     btn.disabled = true;
 
-    // ৩০ সেকেন্ডের স্ট্যাবিলিটি টেস্ট রান করা হচ্ছে
+    // ৩০ সেকেন্ডের এভারেজ স্ট্যাবিলিটি ও পিং চেক
     const { avgPing, jitter } = await testStability30Sec(status);
     document.getElementById('ping-val').innerText = avgPing + ' ms';
     document.getElementById('jitter-val').innerText = jitter + ' ms';
