@@ -33,10 +33,11 @@
     .badge-icon { font-size: 18px; margin-bottom: 6px; display: block; }
     .badge-status { font-weight: 700; margin-top: 6px; font-size: 12px; }
     
-    /* কালার থিম ও ডিফারেন্ট ফন্ট কালার */
+    /* কাস্টম ফন্ট কালার */
     .c-green { color: #34d399 !important; }
-    .c-yellow { color: #fbbf24 !important; }
-    .c-red { color: #f87171 !important; }
+    .c-deep-green { color: #059669 !important; } /* গাঢ় সবুজ (8K এর জন্য) */
+    .c-yellow { color: #fbbf24 !important; }   /* হলুদ (HD এর জন্য) */
+    .c-red { color: #f87171 !important; }      /* লাল (SD এর জন্য) */
     .c-cyan { color: #38bdf8 !important; }
     .c-purple { color: #c084fc !important; }
 
@@ -115,7 +116,7 @@
       <div class="badge">
         <span class="badge-icon">📺</span>
         <span style="color:#94a3b8;">ভিডিও রেজুলেশন</span>
-        <div id="stream-status" class="badge-status c-cyan">--</div>
+        <div id="stream-status" class="badge-status">--</div>
       </div>
       <div class="badge">
         <span class="badge-icon">📶</span>
@@ -170,11 +171,10 @@
   }
   fetchNetworkDetails();
 
-  // ৩০ সেকেন্ড একটানা স্ট্যাবিলিটি ও পিং-জিটার এভারেজ ক্যালকুলেটর
   async function testStability30Sec(statusElement) {
     const pings = [];
-    const totalDuration = 30; // ৩০ সেকেন্ড
-    const intervalTime = 3000; // প্রতি ৩ সেকেন্ডে ১ বার রিকোয়েস্ট (মোট ১০ বার)
+    const totalDuration = 30;
+    const intervalTime = 3000;
     const iterations = totalDuration / (intervalTime / 1000);
 
     for (let i = 1; i <= iterations; i++) {
@@ -256,25 +256,22 @@
       browse.className = "badge-status c-red";
     }
 
-    // ২. ভিডিও রেজুলেশন (SD, HD, 4K, 8K Available)
+    // ২. ভিডিও রেজুলেশন কালার কোডিং (SD: লাল, HD: হলুদ, 4K: সবুজ, 8K: গাঢ় সবুজ)
     if (speed >= 80) {
       stream.innerText = "8K আল্ট্রা"; 
-      stream.className = "badge-status c-purple";
+      stream.className = "badge-status c-deep-green";
     } else if (speed >= 25) {
       stream.innerText = "4K সাপোর্টেড"; 
       stream.className = "badge-status c-green";
     } else if (speed >= 10) {
       stream.innerText = "HD কোয়ালিটি"; 
-      stream.className = "badge-status c-cyan";
-    } else if (speed >= 3) {
-      stream.innerText = "SD কোয়ালিটি"; 
       stream.className = "badge-status c-yellow";
     } else {
-      stream.innerText = "বাফারিং (Low)"; 
+      stream.innerText = "SD কোয়ালিটি"; 
       stream.className = "badge-status c-red";
     }
 
-    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (আপনার দেওয়া শর্ত অনুযায়ী: <30 গুড, 30-50 মিডিয়াম, >50 উইক/ব্যাড)
+    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (<30 গুড, 30-50 মিডিয়াম, >50 উইক/ব্যাড)
     if (avgPing < 30) {
       stability.innerHTML = "🟢 গুড (Good)";
       stability.className = "badge-status blink-good";
@@ -292,7 +289,6 @@
     const status = document.getElementById('status-text');
     btn.disabled = true;
 
-    // ৩০ সেকেন্ডের এভারেজ স্ট্যাবিলিটি ও পিং চেক
     const { avgPing, jitter } = await testStability30Sec(status);
     document.getElementById('ping-val').innerText = avgPing + ' ms';
     document.getElementById('jitter-val').innerText = jitter + ' ms';
