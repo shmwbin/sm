@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHM Network Analyzer Pro </title>
+  <title>SHM Network Analyzer Pro</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: #07090e; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+    body { font-family: 'Outfit', sans-serif; background: #07090e; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; padding-bottom: 90px; }
     .container { width: 100%; max-width: 440px; }
     
     h1 { color: #38bdf8; font-size: 24px; text-align: center; margin: 10px 0 20px 0; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(56,189,248,0.3); }
@@ -33,15 +33,13 @@
     .badge-icon { font-size: 18px; margin-bottom: 6px; display: block; }
     .badge-status { font-weight: 700; margin-top: 6px; font-size: 12px; }
     
-    /* কাস্টম ফন্ট কালার */
     .c-green { color: #34d399 !important; }
-    .c-deep-green { color: #059669 !important; } /* গাঢ় সবুজ (8K এর জন্য) */
-    .c-yellow { color: #fbbf24 !important; }   /* হলুদ (HD এর জন্য) */
-    .c-red { color: #f87171 !important; }      /* লাল (SD এর জন্য) */
+    .c-deep-green { color: #059669 !important; }
+    .c-yellow { color: #fbbf24 !important; }
+    .c-red { color: #f87171 !important; }
     .c-cyan { color: #38bdf8 !important; }
     .c-purple { color: #c084fc !important; }
 
-    /* ব্লিংকিং অ্যানিমেশন */
     @keyframes blink-green { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     @keyframes blink-yellow { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     @keyframes blink-red { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
@@ -55,6 +53,82 @@
     .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(56,189,248,0.6); }
     
     .status { text-align: center; font-size: 13px; color: #fbbf24; min-height: 24px; font-weight: 500; }
+
+    /* ইন্সটল অ্যাপ বিগ ব্যানার ডিজাইন */
+    #install-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid #334155;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+      padding: 16px 20px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 9999;
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .banner-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid #38bdf8;
+    }
+
+    .banner-text h3 {
+      font-size: 15px;
+      color: #f8fafc;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .banner-text p {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .banner-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .install-yes-btn {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(56,189,248,0.3);
+    }
+
+    .install-close-btn {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 10px 12px;
+      font-size: 13px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -130,10 +204,52 @@
   <div class="status" id="status-text"></div>
 </div>
 
+<!-- আকর্ষণীয় ইন্সটল অ্যাপ বিগ ব্যানার -->
+<div id="install-banner">
+  <div class="banner-content">
+    <img src="https://cdn-icons-png.flaticon.com/512/93/93158.png" alt="App Icon" class="banner-icon">
+    <div class="banner-text">
+      <h3>SHM Network Analyzer</h3>
+      <p>দ্রুত ব্যবহারের জন্য অ্যাপটি ইনস্টল করুন</p>
+    </div>
+  </div>
+  <div class="banner-actions">
+    <button class="install-yes-btn" id="installBtnApp">Install</button>
+    <button class="install-close-btn" id="installCloseBtn">✕</button>
+  </div>
+</div>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
   }
+
+  let deferredPrompt;
+  const installBanner = document.getElementById('install-banner');
+  const installBtnApp = document.getElementById('installBtnApp');
+  const installCloseBtn = document.getElementById('installCloseBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBanner.style.display = 'flex';
+  });
+
+  installBtnApp.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      }
+      deferredPrompt = null;
+      installBanner.style.display = 'none';
+    }
+  });
+
+  installCloseBtn.addEventListener('click', () => {
+    installBanner.style.display = 'none';
+  });
 
   function detectMode() {
     if ('connection' in navigator) {
@@ -166,7 +282,7 @@
         document.getElementById('loc-val').innerText = `${data.city || ''}, ${data.country || ''}`;
       }
     } catch (e) {
-      document.getElementById('isp-val').innerText = 'লোকাল নেটওয়ার্ক';
+      document.getElementById('isp-val').innerText = 'লোকাল নেটওয়ার্ক';
     }
   }
   fetchNetworkDetails();
@@ -244,7 +360,6 @@
     const stream = document.getElementById('stream-status');
     const stability = document.getElementById('stability-status');
 
-    // ১. ব্রাউজিং স্পিড রেটিং
     if (speed >= 15) {
       browse.innerText = "ফাস্ট (Good)"; 
       browse.className = "badge-status c-green";
@@ -256,7 +371,6 @@
       browse.className = "badge-status c-red";
     }
 
-    // ২. ভিডিও রেজুলেশন কালার কোডিং (SD: লাল, HD: হলুদ, 4K: সবুজ, 8K: গাঢ় সবুজ)
     if (speed >= 80) {
       stream.innerText = "8K আল্ট্রা"; 
       stream.className = "badge-status c-deep-green";
@@ -264,19 +378,18 @@
       stream.innerText = "4K সাপোর্টেড"; 
       stream.className = "badge-status c-green";
     } else if (speed >= 10) {
-      stream.innerText = "HD কোয়ালিটি"; 
+      stream.innerText = "HD কোয়ালিটি"; 
       stream.className = "badge-status c-yellow";
     } else {
-      stream.innerText = "SD কোয়ালিটি"; 
+      stream.innerText = "SD কোয়ালিটি"; 
       stream.className = "badge-status c-red";
     }
 
-    // ৩. নেটওয়ার্ক স্ট্যাবিলিটি (<30 গুড, 30-50 মিডিয়াম, >50 উইক/ব্যাড)
     if (avgPing < 30) {
       stability.innerHTML = "🟢 গুড (Good)";
       stability.className = "badge-status blink-good";
     } else if (avgPing >= 30 && avgPing <= 50) {
-      stability.innerHTML = "🟡 মিডিয়াম";
+      stability.innerHTML = "🟡 মিডিয়াম";
       stability.className = "badge-status blink-fair";
     } else {
       stability.innerHTML = "🔴 উইক (Bad)";
