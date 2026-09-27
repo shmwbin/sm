@@ -1,10 +1,10 @@
 {
-  "name": "SHM Wi-Fi Analyzer",
+  "name": "SHM Wi-Fi Analyzer Pro",
   "short_name": "SHM Wi-Fi",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f111a",
-  "theme_color": "#00d2d3",
+  "background_color": "#07090e",
+  "theme_color": "#0f172a",
   "orientation": "portrait",
   "icons": [
     {
